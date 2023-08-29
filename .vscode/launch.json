@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [        
+        {
+            "name": "Django",
+            "type": "python",
+            "request": "launch",
+            "python": "/home/hanmin/source/geo-guide/django_env/bin/python3",
+            "program": "/home/hanmin/source/geo-guide/geo_guide_backend/manage.py",
+            "console": "internalConsole",
+            "args": [
+                "runserver"
+            ],
+            "env": {
+                "DJANGO_SETTINGS_MODULE": "geo_guide_backend.settings"
+            }
+        }
+    ]
+}
