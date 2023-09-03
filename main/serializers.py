@@ -1,43 +1,29 @@
-from django.conf import settings
 from rest_framework import serializers
 
-# class LocationSerializer(serializers.Serializer):
-#     name = serializers.CharField(max_length=255)
-#     address = serializers.CharField(max_length=255)
-#     type = serializers.CharField(max_length=255)
-#     distance = serializers.FloatField()
-
-#     def get_logo(self, location):
-#         """
-#         Returns the logo of the location from the Google Maps API.
-#         """
-#         params = {
-#             "place_id": location["place_id"],
-#             "key": {settings.GOOGLE_MAP_API_KEY},
-#         }
-
-#         url = "https://maps.googleapis.com/maps/api/place/details/json"
-
-#         response = request.get(url, params=params)
-
-#         if response.status_code == 200:
-#             return response.json()["result"]["photos"][0]["photo_reference"]
-#         else:
-#             return None
-
-#     def to_representation(self, instance):
-#         """
-#         Returns the representation of the location.
-#         """
-#         representation = super().to_representation(instance)
-#         representation["logo"] = self.get_logo(instance)
-#         return representation
-
 class NearbyResultsViewModelSerializer(serializers.Serializer):
-    business_status = serializers.CharField()
-    name = serializers.CharField()
+    place_id = serializers.CharField()
+    name = serializers.CharField() 
     vicinity = serializers.CharField()
-    rating = serializers.IntegerField(source='rating')
-
+    business_status = serializers.CharField(required = False)
+    rating = serializers.IntegerField(required = False),
+    types = serializers.ListField(child=serializers.CharField(), required = False)
+    
+    def get_rating(self, obj):
+        return obj.rating if obj.rating else 0
+    
+    def get_business_status(self, obj):
+        return obj.business_status if obj.business_status else "Closed_Temporarily"
+    
+    def get_types(self, obj):
+        return obj.type if obj.type else []
+    
+    def to_dict(self, obj):
+        data = super().to_representation(obj)
+        data["rating"] = self.get_rating(obj)
+        data["business_status"] = self.get_business_status(obj)
+        data["types"] = self.get_type(obj)
+        return data;
+    
     class Meta:
-        fields = ["business_status", "name","vicinity", "rating"]
+        fields = ["place_id", "name","vicinity","business_status", "rating", "types"]
+
