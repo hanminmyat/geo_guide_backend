@@ -15,11 +15,13 @@ def nearby_location_list(request):
         log = request.query_params['log'] 
         distance = request.query_params['distance']
         type = request.query_params.get('type', '')
+        nextPageToken = request.query_params.get('nextpage_token', '')
               
         params = {
             "location": f"{lat},{log}",
             "radius": distance,
             "type": type,
+            "pagetoken": nextPageToken,
             "key": get_google_map_api_key(),
         }
 
@@ -28,17 +30,35 @@ def nearby_location_list(request):
         response = requests.get(url, params=params)
 
         if response.status_code == 200:
-            places = response.json()["results"]
+            # content = response.json()["content"]
+            data = response.json()
+            places = data["results"]
+            lastPage = False 
+            
+            if "next_page_token" in data:
+                nextPageToken = data["next_page_token"]
+            else:
+                nextPageToken = ''
+                lastPage = True
+            
             # serializer = NearbyResultsViewModelSerializer(places, many=True)
             viewmodel_list = []
-            for place in places:
-                if place == places[0]:
-                    continue
+            for place in places:                
                 
-                place_view_model = NearbyResultsViewModelSerializer(place)
-                viewmodel_list.append(place_view_model.data)
+                nearby_location = {
+                    'place_id': place.get('place_id', ''),
+                    'name': place.get('name', ''),
+                    'icon': place.get('icon', ''),
+                    'vicinity': place.get('vicinity', ''),
+                    'business_status': place.get('business_status', ''),
+                    'rating': place.get('rating', 0),
+                    'types': place.get('types', ['']),
+                    'open_now': place.get('opening_hours', {}).get('open_now', False),
+                }
+                
+                viewmodel_list.append(nearby_location)
 
-            return Response(viewmodel_list)
+            return Response(data = {"nextpage_token": nextPageToken, "last_page": lastPage, "locations": viewmodel_list})
         else:
             raise Exception(f"Error fetching places: {response.status_code}")
 

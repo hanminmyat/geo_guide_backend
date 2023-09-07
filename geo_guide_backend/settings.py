@@ -146,6 +146,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",  # Replace with the actual URL of your Angular app
+]
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8081',
 )

@@ -24,7 +24,7 @@ class NearbyResultsViewModelSerializer(serializers.Serializer):
         return obj.type if obj.type else []
     
     def get_openNow_status(self, obj):
-        return obj.opening_hours.open_now if obj.opening_hours.open_now and obj.business_status == 'OPERATIONAL' else False
+        return obj["opening_hours"]["open_now"] if obj["opening_hours"]["open_now"] and obj.business_status == 'OPERATIONAL' else False
     
     def to_dict(self, obj):
         data = super().to_representation(obj)
@@ -36,5 +36,5 @@ class NearbyResultsViewModelSerializer(serializers.Serializer):
         return data;
     
     class Meta:
-        fields = ["place_id", "name","vicinity","business_status", "rating"]
+        fields = ["place_id", "name","vicinity","business_status", "rating", "types", "price_level", "open_now"]
 
