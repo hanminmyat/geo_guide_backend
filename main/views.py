@@ -13,17 +13,19 @@ def nearby_location_list(request):
     if request.method == 'GET':
         lat = request.query_params['lat']
         log = request.query_params['log'] 
-        distance = request.query_params['distance']
+        distance = int(request.query_params['distance'])
         type = request.query_params.get('type', '')
         nextPageToken = request.query_params.get('nextpage_token', '')
               
         params = {
             "location": f"{lat},{log}",
-            "radius": distance,
             "type": type,
             "pagetoken": nextPageToken,
             "key": get_google_map_api_key(),
         }
+        
+        if(distance >= 10000):
+            params["radius"] = distance
 
         url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
@@ -79,9 +81,12 @@ def location_detail_view(request):
             shop_info = {
                 'name': result.get('name', ''),
                 'logo_or_image': result.get('icon', ''),
+                'lat_lng': result.get('geometry', {}).get('location', {}),
+                'phoneNo': result.get('formatted_phone_number', ''),
                 'address': result.get('formatted_address', ''),
                 'rating': result.get('rating', ''),
                 'open_hours': result.get('opening_hours', {}).get('weekday_text', []),
+                'open_now':result.get('opening_hours', {}).get('open_now', False),
                 'top_reviews': result.get('reviews', [])[:5],
             }
 
