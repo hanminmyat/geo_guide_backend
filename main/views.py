@@ -87,7 +87,8 @@ def location_detail_view(request):
                 'rating': result.get('rating', ''),
                 'open_hours': result.get('opening_hours', {}).get('weekday_text', []),
                 'open_now':result.get('opening_hours', {}).get('open_now', False),
-                'top_reviews': result.get('reviews', [])[:5]
+                'top_reviews': result.get('reviews', [])[:5],
+                'types': result.get('types', [])
             }
 
             return JsonResponse(shop_info)
