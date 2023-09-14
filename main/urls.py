@@ -3,5 +3,5 @@ from .import views
 
 urlpatterns = [
     re_path(r'^api/nearby-locations$', views.nearby_location_list),
-    re_path(r'^api/location-detail$', views.location_detail_view, name='get_location_details')
+    re_path(r'^api/location-detail$', views.location_detail_view)
 ]
