@@ -8,6 +8,9 @@ from django.http import JsonResponse
 def get_google_map_api_key():
     return settings.__getattr__('GOOGLE_MAP_API_KEY')
 
+def get_weather_api_key():
+    return settings.__getattr__('WEATHER_API_KEY')
+
 @api_view(['GET'])
 def nearby_location_list(request):
     if request.method == 'GET':
@@ -95,4 +98,27 @@ def location_detail_view(request):
         else:
             return JsonResponse({'error': 'Could not retrieve shop details'})
 
+@api_view(['Get'])
+def weather_status(request):
+    weather_api_key = get_weather_api_key();
+    
+    url = f'https://dataservice.accuweather.com/currentconditions/v1/246562';
+    params = {'apikey': weather_api_key}
+    
+    try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            weather_data = response.json()[0]  
             
+            weather_info = {
+                'weatherText': weather_data.get('WeatherText', ''),
+                'precipitationType': weather_data.get('PrecipitationType', ''),
+                'weatherIcon': weather_data.get('WeatherIcon', ''),
+                'isDayTime': weather_data.get('IsDayTime', False),
+                'temperature_metric': weather_data.get('Temperature', []).get('Metric', [])
+            }         
+            return JsonResponse(weather_info)
+    except requests.exceptions.RequestException as e:
+            return JsonResponse({'error': 'Failed to fetch weather data'}, status=500)
+
+    
