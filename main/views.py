@@ -1,5 +1,4 @@
 from rest_framework.decorators import api_view
-from .serializers import NearbyResultsViewModelSerializer
 import requests
 from django.conf import settings
 from rest_framework.response import Response
@@ -35,7 +34,6 @@ def nearby_location_list(request):
         response = requests.get(url, params=params)
 
         if response.status_code == 200:
-            # content = response.json()["content"]
             data = response.json()
             places = data["results"]
             lastPage = False 
@@ -46,7 +44,6 @@ def nearby_location_list(request):
                 nextPageToken = ''
                 lastPage = True
             
-            # serializer = NearbyResultsViewModelSerializer(places, many=True)
             viewmodel_list = []
             for place in places:                
                 
