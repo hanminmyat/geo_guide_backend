@@ -82,6 +82,7 @@ def location_detail_view(request):
 
             # Extract the desired information from the API response
             shop_info = {
+                'place_id': result.get('place_id', ''),
                 'name': result.get('name', ''),
                 'logo_or_image': result.get('icon', ''),
                 'lat_lng': result.get('geometry', {}).get('location', {}),
@@ -108,7 +109,8 @@ def weather_status(request):
     try:
             response = requests.get(url, params=params)
             response.raise_for_status()  # Raise an exception for HTTP errors
-            weather_data = response.json()[0]  
+            result = response.json()
+            weather_data = result[0]
             
             weather_info = {
                 'weatherText': weather_data.get('WeatherText', ''),
@@ -116,7 +118,8 @@ def weather_status(request):
                 'weatherIcon': weather_data.get('WeatherIcon', ''),
                 'isDayTime': weather_data.get('IsDayTime', False),
                 'temperature_metric': weather_data.get('Temperature', []).get('Metric', [])
-            }         
+            }
+            
             return JsonResponse(weather_info)
     except requests.exceptions.RequestException as e:
             return JsonResponse({'error': 'Failed to fetch weather data'}, status=500)
